@@ -1,0 +1,259 @@
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hannie Marie Zaspa - Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+
+    <div class="gif-bg">
+  <img src="images/aurora1.gif" alt="Aurora Background">
+    </div>
+
+    <!-- Navbar -->
+    <nav>
+      <div class="nav-container">
+        <div class="logo">Hannie Marie Zaspa</div>
+        <ul class="nav-links">
+          <li><a href="#home">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#projects">Projects</a></li>
+          <li><a href="#contact">Contact</a></li>
+          <li><a href="#my-grade">My Grade</a></li>
+        </ul>
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="fade-in">
+      <div class="hero-content">
+        <div class="profile-pic">
+          <img src="images/pfpic.jpeg" alt="Profile Picture">
+        </div>
+        <h1>Hi, I'm Hannie Marie A. Zaspa</h1>
+        <p>3rd Year | Computer Science Student</p>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="fade-in">
+      <h2>About Me</h2>
+      <div class="about-info">
+        <p><b>Date of Birth:</b> April 29, 2002</p>
+        <p><b>Address:</b> P7A Post 12 Tabon, Bislig City</p>
+        <p><b>Father’s Name:</b> Rolando A. Zaspa (Church Employee)</p>
+        <p><b>Mother’s Name:</b> Luzviminda A. Zaspa (Government Employee)</p>
+        <p><b>Siblings (7):</b></p>
+        <ul>
+          <li>Miland Marie Zaspa-Linog</li>
+          <li>Apple Jane Marie A. Zaspa</li>
+          <li>Cecille Marie A. Zaspa</li>
+          <li>Roland Joseph A. Zaspa Jr.</li>
+          <li>Joanne Marie A. Zaspa</li>
+          <li>Hannie Marie A. Zaspa 😆</li>
+          <li>Philip Joseph A. Zaspa</li>
+          <li>Peter Joseph A. Zaspa</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- === GALLERY SECTION === -->
+ 
+  <!-- === GALLERY SECTION === -->
+<section id="gallery" class="appear">
+  <h2>🖼️ My Family Gallery 🖼️</h2>
+  <div class="scroll-gallery">
+    <div class="gallery-track" id="galleryTrack">
+      <!-- Only first 4 visible initially -->
+      <div class="gallery-item"><img src="gallery/1.JPG" alt="1"></div>
+      <div class="gallery-item"><img src="gallery/2.JPG" alt="2"></div>
+      <div class="gallery-item"><img src="gallery/3.JPG" alt="3"></div>
+      <div class="gallery-item"><img src="gallery/4.JPG" alt="4"></div>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+
+
+
+    <!-- Projects Section -->
+    <section id="projects" class="fade-in">
+      <h2>Projects</h2>
+      <div class="projects">
+        <div class="project-card">
+          <img src="images/brewside.png" alt="Brew Side Website">
+          <h3>Brew Side Website</h3>
+          <p>An online ordering and tracking system for a coffee shop.</p>
+          <a href="https://brewside.cs-soft-eng.com/index.php" class="project-btn">View Project</a>
+        </div>
+        <div class="project-card">
+          <img src="images/expense.png" alt="Expense Tracker App">
+          <h3>Expense Tracker App</h3>
+          <p>A simple web app to monitor and manage daily expenses efficiently.</p>
+          <a href="https://your-link-to-expenseapp.com" class="project-btn">View Project</a>
+        </div>
+        <div class="project-card">
+          <img src="images/hanniem.png" alt="Portfolio Website">
+          <h3>Portfolio Website</h3>
+          <p>A personal interactive website portfolio showcasing projects, skills, and achievements.</p>
+          <a href="https://your-link-to-portfolio.com" class="project-btn">View Project</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="fade-in">
+      <h2>Contact Me</h2>
+      <div class="contact-container">
+        <div class="contact-card">
+          <div class="contact-icon">📧</div>
+          <p><b>Email:</b> zaspahannie16@gmail.com</p>
+        </div>
+        <div class="contact-card">
+          <div class="contact-icon">📱</div>
+          <p><b>Phone:</b> 09947990336</p>
+        </div>
+        <div class="contact-card">
+          <div class="contact-icon">💬</div>
+          <p><b>Message:</b> <a href="mailto:zaspahannie16@gmail.com">Send me an email</a></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- My Grades Section -->
+    <section id="my-grade" class="page-section fade-in">
+      <h2 class="section-title">My Grade</h2>
+      <p id="grade-status" class="grades-status">Loading your grade...</p>
+      <div id="grade-result" class="grade-card" hidden>
+        <p><strong>Student ID:</strong> <span id="g-id"></span></p>
+        <p><strong>Last Name:</strong> <span id="g-ln"></span></p>
+        <p><strong>Midterm:</strong> <span id="g-mid"></span></p>
+        <p><strong>Final:</strong> <span id="g-fin"></span></p>
+      </div>
+    </section>
+
+    <!-- ===== Scripts ===== -->
+    <script>
+
+
+  const galleryTrack = document.getElementById("galleryTrack");
+
+  // Total number of images
+  const totalImages = 32;
+
+  // Add images twice (so scrolling feels endless)
+  for (let repeat = 0; repeat < 2; repeat++) {
+    for (let i = 1; i <= totalImages; i++) {
+      const div = document.createElement("div");
+      div.classList.add("gallery-item");
+
+      const img = document.createElement("img");
+      img.src = `gallery/${i}.jpg`; // 👈 change extension if needed
+      img.alt = `Image ${i}`;
+
+      div.appendChild(img);
+      galleryTrack.appendChild(div);
+    }
+  }
+
+  const scrollGallery = document.querySelector(".scroll-gallery");
+
+  // Reset scroll when reaching the duplicate set
+  scrollGallery.addEventListener("scroll", () => {
+    if (scrollGallery.scrollLeft >= galleryTrack.scrollWidth / 2) {
+      scrollGallery.scrollLeft = 0; // jump back to start
+    }
+  });
+
+
+      // === Grade Fetch (Midterm via fetch, Final via XHR) ===
+      const API_URL = "http://class-grades-cs.mywebcommunity.org/grades_api.php";
+      const MY_ID = "202010001";  // <-- replace with your real student ID
+
+      const statusEl = document.getElementById("grade-status");
+      const resultEl = document.getElementById("grade-result");
+      const idEl = document.getElementById("g-id");
+      const lnEl = document.getElementById("g-ln");
+      const midEl = document.getElementById("g-mid");
+      const finEl = document.getElementById("g-fin");
+
+      async function getMidterm() {
+        try {
+          const res = await fetch(API_URL);
+          const xmlText = await res.text();
+          const parser = new DOMParser();
+          const xml = parser.parseFromString(xmlText, "application/xml");
+          const student = Array.from(xml.querySelectorAll("student"))
+            .find(s => s.querySelector("student_id")?.textContent.trim() === MY_ID);
+          if (!student) {
+            statusEl.textContent = "Your ID was not found.";
+            return;
+          }
+          idEl.textContent = student.querySelector("student_id")?.textContent.trim();
+          lnEl.textContent = student.querySelector("student_lastname")?.textContent.trim();
+          midEl.textContent = student.querySelector("midterm_grade")?.textContent.trim();
+          getFinalGrade(); // fetch final using XHR
+        } catch (err) {
+          console.error(err);
+          statusEl.textContent = "Error loading midterm grade.";
+        }
+      }
+
+      function getFinalGrade() {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", API_URL);
+        xhr.onload = function () {
+          if (xhr.status === 200) {
+            const parser = new DOMParser();
+            const xml = parser.parseFromString(xhr.responseText, "application/xml");
+            const student = Array.from(xml.querySelectorAll("student"))
+              .find(s => s.querySelector("student_id")?.textContent.trim() === MY_ID);
+            if (student) {
+              finEl.textContent = student.querySelector("final_grade")?.textContent.trim();
+              statusEl.textContent = "Your grade loaded successfully!";
+              resultEl.hidden = false;
+            }
+          } else {
+            statusEl.textContent = "Error loading final grade.";
+          }
+        };
+        xhr.onerror = () => statusEl.textContent = "XHR request failed.";
+        xhr.send();
+      }
+
+      window.addEventListener("DOMContentLoaded", getMidterm);
+
+      // === Fade-in Animation on Scroll ===
+      const faders = document.querySelectorAll('.fade-in');
+      const appearOptions = { threshold: 0.3, rootMargin: "0px 0px -50px 0px" };
+      const appearOnScroll = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('appear');
+          observer.unobserve(entry.target);
+        });
+      }, appearOptions);
+      faders.forEach(fader => appearOnScroll.observe(fader));
+
+      // === Hamburger Menu Toggle ===
+      const hamburger = document.querySelector('.hamburger');
+      const navLinks = document.querySelector('.nav-links');
+      hamburger.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+        hamburger.classList.toggle('toggle');
+      });
+    </script>
+
+  </body>
+  </html>
