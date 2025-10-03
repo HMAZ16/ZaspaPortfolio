@@ -146,104 +146,10 @@
     <!-- ===== Scripts ===== -->
     <script>
 
+//fetch Grade via API
+   src="api.js">
 
-  const galleryTrack = document.getElementById("galleryTrack");
-
-  // Total number of images
-  const totalImages = 32;
-
-  // Add images twice (so scrolling feels endless)
-  for (let repeat = 0; repeat < 2; repeat++) {
-    for (let i = 1; i <= totalImages; i++) {
-      const div = document.createElement("div");
-      div.classList.add("gallery-item");
-
-      const img = document.createElement("img");
-      img.src = `gallery/${i}.jpg`; // 👈 change extension if needed
-      img.alt = `Image ${i}`;
-
-      div.appendChild(img);
-      galleryTrack.appendChild(div);
-    }
-  }
-
-  const scrollGallery = document.querySelector(".scroll-gallery");
-
-  // Reset scroll when reaching the duplicate set
-  scrollGallery.addEventListener("scroll", () => {
-    if (scrollGallery.scrollLeft >= galleryTrack.scrollWidth / 2) {
-      scrollGallery.scrollLeft = 0; // jump back to start
-    }
-  });
-
-
-      // === Grade Fetch (Midterm via fetch, Final via XHR) ===
-  const API_URL = "http://class-grades-cs.mywebcommunity.org/grades_api.php";
-  const MY_ID = "2340020";  // ✅ your real ID
-
-  const statusEl = document.getElementById("grade-status");
-  const resultEl = document.getElementById("grade-result");
-  const idEl = document.getElementById("g-id");
-  const lnEl = document.getElementById("g-ln");
-  const midEl = document.getElementById("g-mid");
-  const finEl = document.getElementById("g-fin");
-
-  // --- Fetch midterm with fetch API ---
-  async function getMidterm() {
-    try {
-      const res = await fetch(API_URL);
-      const xmlText = await res.text();
-      const parser = new DOMParser();
-      const xml = parser.parseFromString(xmlText, "application/xml");
-
-      // ✅ the XML nodes are <row>, not <student>
-      const student = Array.from(xml.querySelectorAll("row"))
-        .find(s => s.querySelector("student_id")?.textContent.trim() === MY_ID);
-
-      if (!student) {
-        statusEl.textContent = "Your ID was not found.";
-        return;
-      }
-
-      idEl.textContent = student.querySelector("student_id")?.textContent.trim();
-      lnEl.textContent = student.querySelector("student_lastname")?.textContent.trim();
-      midEl.textContent = student.querySelector("midterm_grade")?.textContent.trim();
-
-      // fetch final using XHR
-      getFinalGrade();
-    } catch (err) {
-      console.error(err);
-      statusEl.textContent = "Error loading midterm grade.";
-    }
-  }
-
-  // --- Fetch final with XMLHttpRequest ---
-  function getFinalGrade() {
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", API_URL);
-    xhr.onload = function () {
-      if (xhr.status === 200) {
-        const parser = new DOMParser();
-        const xml = parser.parseFromString(xhr.responseText, "application/xml");
-
-        const student = Array.from(xml.querySelectorAll("row"))
-          .find(s => s.querySelector("student_id")?.textContent.trim() === MY_ID);
-
-        if (student) {
-          finEl.textContent = student.querySelector("final_grade")?.textContent.trim();
-          statusEl.textContent = "✅ Your grade loaded successfully!";
-          resultEl.hidden = false;
-        }
-      } else {
-        statusEl.textContent = "Error loading final grade.";
-      }
-    };
-    xhr.onerror = () => statusEl.textContent = "XHR request failed.";
-    xhr.send();
-  }
-
-  window.onload = getMidterm;
-
+     
       // === Fade-in Animation on Scroll ===
       const faders = document.querySelectorAll('.fade-in');
       const appearOptions = { threshold: 0.3, rootMargin: "0px 0px -50px 0px" };
@@ -267,6 +173,7 @@
 
   </body>
   </html>
+
 
 
 
