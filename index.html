@@ -178,61 +178,71 @@
 
 
       // === Grade Fetch (Midterm via fetch, Final via XHR) ===
-      const API_URL = "http://class-grades-cs.mywebcommunity.org/grades_api.php";
-      const MY_ID = "202010001";  // <-- replace with your real student ID
+  const API_URL = "http://class-grades-cs.mywebcommunity.org/grades_api.php";
+  const MY_ID = "2340020";  // ✅ your real student ID
 
-      const statusEl = document.getElementById("grade-status");
-      const resultEl = document.getElementById("grade-result");
-      const idEl = document.getElementById("g-id");
-      const lnEl = document.getElementById("g-ln");
-      const midEl = document.getElementById("g-mid");
-      const finEl = document.getElementById("g-fin");
+  const statusEl = document.getElementById("grade-status");
+  const resultEl = document.getElementById("grade-result");
+  const idEl = document.getElementById("g-id");
+  const lnEl = document.getElementById("g-ln");
+  const midEl = document.getElementById("g-mid");
+  const finEl = document.getElementById("g-fin");
 
-      async function getMidterm() {
-        try {
-          const res = await fetch(API_URL);
-          const xmlText = await res.text();
-          const parser = new DOMParser();
-          const xml = parser.parseFromString(xmlText, "application/xml");
-          const student = Array.from(xml.querySelectorAll("student"))
-            .find(s => s.querySelector("student_id")?.textContent.trim() === MY_ID);
-          if (!student) {
-            statusEl.textContent = "Your ID was not found.";
-            return;
-          }
-          idEl.textContent = student.querySelector("student_id")?.textContent.trim();
-          lnEl.textContent = student.querySelector("student_lastname")?.textContent.trim();
-          midEl.textContent = student.querySelector("midterm_grade")?.textContent.trim();
-          getFinalGrade(); // fetch final using XHR
-        } catch (err) {
-          console.error(err);
-          statusEl.textContent = "Error loading midterm grade.";
+  // --- Fetch midterm using fetch API ---
+  async function getMidterm() {
+    try {
+      const res = await fetch(API_URL);
+      const xmlText = await res.text();
+      const parser = new DOMParser();
+      const xml = parser.parseFromString(xmlText, "application/xml");
+
+      const student = Array.from(xml.querySelectorAll("student"))
+        .find(s => s.querySelector("student_id")?.textContent.trim() === MY_ID);
+
+      if (!student) {
+        statusEl.textContent = "Your ID was not found.";
+        return;
+      }
+
+      idEl.textContent = student.querySelector("student_id")?.textContent.trim();
+      lnEl.textContent = student.querySelector("student_lastname")?.textContent.trim();
+      midEl.textContent = student.querySelector("midterm_grade")?.textContent.trim();
+
+      // ✅ After midterm, fetch final using XHR
+      getFinalGrade();
+    } catch (err) {
+      console.error(err);
+      statusEl.textContent = "Error loading midterm grade.";
+    }
+  }
+
+  // --- Fetch final grade using XMLHttpRequest ---
+  function getFinalGrade() {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", API_URL);
+    xhr.onload = function () {
+      if (xhr.status === 200) {
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(xhr.responseText, "application/xml");
+
+        const student = Array.from(xml.querySelectorAll("student"))
+          .find(s => s.querySelector("student_id")?.textContent.trim() === MY_ID);
+
+        if (student) {
+          finEl.textContent = student.querySelector("final_grade")?.textContent.trim();
+          statusEl.textContent = "✅ Your grade loaded successfully!";
+          resultEl.hidden = false;
         }
+      } else {
+        statusEl.textContent = "Error loading final grade.";
       }
+    };
+    xhr.onerror = () => statusEl.textContent = "XHR request failed.";
+    xhr.send();
+  }
 
-      function getFinalGrade() {
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", API_URL);
-        xhr.onload = function () {
-          if (xhr.status === 200) {
-            const parser = new DOMParser();
-            const xml = parser.parseFromString(xhr.responseText, "application/xml");
-            const student = Array.from(xml.querySelectorAll("student"))
-              .find(s => s.querySelector("student_id")?.textContent.trim() === MY_ID);
-            if (student) {
-              finEl.textContent = student.querySelector("final_grade")?.textContent.trim();
-              statusEl.textContent = "Your grade loaded successfully!";
-              resultEl.hidden = false;
-            }
-          } else {
-            statusEl.textContent = "Error loading final grade.";
-          }
-        };
-        xhr.onerror = () => statusEl.textContent = "XHR request failed.";
-        xhr.send();
-      }
-
-      window.addEventListener("DOMContentLoaded", getMidterm);
+  // Run when page loads
+  window.onload = getMidterm;
 
       // === Fade-in Animation on Scroll ===
       const faders = document.querySelectorAll('.fade-in');
@@ -257,3 +267,4 @@
 
   </body>
   </html>
+
