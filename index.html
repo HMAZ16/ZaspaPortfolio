@@ -31,7 +31,7 @@
       </div>
     </nav>
 
-    <!-- Hero Section -->
+    <!-- Profile Section -->
     <section id="home" class="fade-in">
       <div class="hero-content">
         <div class="profile-pic">
@@ -179,7 +179,7 @@
 
       // === Grade Fetch (Midterm via fetch, Final via XHR) ===
   const API_URL = "http://class-grades-cs.mywebcommunity.org/grades_api.php";
-  const MY_ID = "2340020";  // ✅ your real student ID
+  const MY_ID = "2340020";  // ✅ your real ID
 
   const statusEl = document.getElementById("grade-status");
   const resultEl = document.getElementById("grade-result");
@@ -188,7 +188,7 @@
   const midEl = document.getElementById("g-mid");
   const finEl = document.getElementById("g-fin");
 
-  // --- Fetch midterm using fetch API ---
+  // --- Fetch midterm with fetch API ---
   async function getMidterm() {
     try {
       const res = await fetch(API_URL);
@@ -196,7 +196,8 @@
       const parser = new DOMParser();
       const xml = parser.parseFromString(xmlText, "application/xml");
 
-      const student = Array.from(xml.querySelectorAll("student"))
+      // ✅ the XML nodes are <row>, not <student>
+      const student = Array.from(xml.querySelectorAll("row"))
         .find(s => s.querySelector("student_id")?.textContent.trim() === MY_ID);
 
       if (!student) {
@@ -208,7 +209,7 @@
       lnEl.textContent = student.querySelector("student_lastname")?.textContent.trim();
       midEl.textContent = student.querySelector("midterm_grade")?.textContent.trim();
 
-      // ✅ After midterm, fetch final using XHR
+      // fetch final using XHR
       getFinalGrade();
     } catch (err) {
       console.error(err);
@@ -216,7 +217,7 @@
     }
   }
 
-  // --- Fetch final grade using XMLHttpRequest ---
+  // --- Fetch final with XMLHttpRequest ---
   function getFinalGrade() {
     const xhr = new XMLHttpRequest();
     xhr.open("GET", API_URL);
@@ -225,7 +226,7 @@
         const parser = new DOMParser();
         const xml = parser.parseFromString(xhr.responseText, "application/xml");
 
-        const student = Array.from(xml.querySelectorAll("student"))
+        const student = Array.from(xml.querySelectorAll("row"))
           .find(s => s.querySelector("student_id")?.textContent.trim() === MY_ID);
 
         if (student) {
@@ -241,7 +242,6 @@
     xhr.send();
   }
 
-  // Run when page loads
   window.onload = getMidterm;
 
       // === Fade-in Animation on Scroll ===
@@ -267,4 +267,5 @@
 
   </body>
   </html>
+
 
