@@ -15,7 +15,7 @@ fetch('https://corsproxy.io/?' + encodeURIComponent('http://class-grades-cs.mywe
     const students = xmlDoc.getElementsByTagName('student');
     for (let student of students) {
         const studentId = student.getElementsByTagName('student_id')[0]?.textContent;
-        if (studentId === '2340101') {
+        if (studentId === '2340020') {
             const midtermGrade = student.getElementsByTagName('midterm_grade')[0]?.textContent || 'N/A';
             document.getElementById('midterm-grade').textContent = "Midterm: " + midtermGrade;
             break;
@@ -41,7 +41,7 @@ xhr.onload = function() {
             const students = xmlDoc.getElementsByTagName('student');
             for (let student of students) {
                 const studentId = student.getElementsByTagName('student_id')[0]?.textContent;
-                if (studentId === '2340101') {
+                if (studentId === '2340020') {
                     const finalGrade = student.getElementsByTagName('final_grade')[0]?.textContent || 'N/A';
                     document.getElementById('final-grade').textContent = "Final: " + finalGrade;
                     break;
@@ -63,3 +63,4 @@ xhr.onerror = function() {
 };
 
 xhr.send();
+
