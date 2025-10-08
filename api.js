@@ -1,5 +1,5 @@
 // Fetch Midterm Grade using Fetch API with corsproxy.io
-fetch('https://corsproxy.io/?' + encodeURIComponent('http://class-grades-cs.mywebcommunity.org/grades_api.php?surname=rein&id_number=2340101'))
+fetch('https://corsproxy.io/?' + encodeURIComponent('http://class-grades-cs.mywebcommunity.org/grades_api.php?surname=zaspa&id_number=2340020'))
 .then(response => {
     if (!response.ok) {
         throw new Error('Network response was not ok');
@@ -29,7 +29,7 @@ fetch('https://corsproxy.io/?' + encodeURIComponent('http://class-grades-cs.mywe
 
 // Fetch Final Grade using XMLHttpRequest with corsproxy.io
 const xhr = new XMLHttpRequest();
-xhr.open('GET', 'https://corsproxy.io/?' + encodeURIComponent('http://class-grades-cs.mywebcommunity.org/grades_api.php?surname=rein&id_number=2340101'), true);
+xhr.open('GET', 'https://corsproxy.io/?' + encodeURIComponent('http://class-grades-cs.mywebcommunity.org/grades_api.php?surname=zaspa&id_number=2340020'), true);
 
 xhr.onload = function() {
     if (xhr.status === 200) {
@@ -63,4 +63,5 @@ xhr.onerror = function() {
 };
 
 xhr.send();
+
 
