@@ -127,6 +127,7 @@
     <p id="grade-status" class="grades-status">Loading your grade...</p>
     <div id="grade-result" class="grade-card" hidden>
       <p><strong>Student ID:</strong> <span id="g-id"></span></p>
+      <p><strong>Last Name:</strong> <span id="g-ln"></span></p>
       <p><strong>Midterm:</strong> <span id="g-mid"></span></p>
       <p><strong>Final:</strong> <span id="g-fin"></span></p>
     </div>
@@ -183,6 +184,7 @@
               const finalGrade = student.getElementsByTagName('final_grade')[0]?.textContent?.trim() || 'N/A';
 
               document.getElementById('g-id').textContent = id;
+              document.getElementById('g-ln').textContent = lastName;
               document.getElementById('g-mid').textContent = midterm;
               document.getElementById('g-fin').textContent = finalGrade;
 
@@ -207,5 +209,3 @@
 
 </body>
 </html>
-
-
