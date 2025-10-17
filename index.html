@@ -158,54 +158,77 @@
 
   <!-- === Fetch Grades === -->
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const studentId = '2340020';
-      const studentLastName = 'ZASPA';
-      const apiUrl = `https://corsproxy.io/?http://class-grades-cs.mywebcommunity.org/grades_api.php?surname=${studentLastName.toLowerCase()}&id_number=${studentId}`;
+document.addEventListener("DOMContentLoaded", () => {
+  const studentId = "2340020";
+  const studentLastName = "zaspa";
 
-      fetch(apiUrl)
-        .then(response => {
-          if (!response.ok) throw new Error("Network response was not ok");
-          return response.text();
-        })
-        .then(data => {
-          const parser = new DOMParser();
-          const xmlDoc = parser.parseFromString(data, 'text/xml');
-          const students = xmlDoc.getElementsByTagName('student');
+  const proxies = [
+    "https://corsproxy.io/?",
+    "https://api.allorigins.win/raw?url=",
+    "https://thingproxy.freeboard.io/fetch/"
+  ];
 
-          let found = false;
-          for (let student of students) {
-            const id = student.getElementsByTagName('student_id')[0]?.textContent?.trim();
-            if (id === studentId) {
-              found = true;
+  const baseUrl = `http://class-grades-cs.mywebcommunity.org/grades_api.php?surname=${studentLastName}&id_number=${studentId}`;
+  let currentProxy = 0;
 
-              const lastName = student.getElementsByTagName('surname')[0]?.textContent?.trim() || 'N/A';
-              const midterm = student.getElementsByTagName('midterm_grade')[0]?.textContent?.trim() || 'N/A';
-              const finalGrade = student.getElementsByTagName('final_grade')[0]?.textContent?.trim() || 'N/A';
+  function fetchGrade() {
+    const apiUrl = proxies[currentProxy] + encodeURIComponent(baseUrl);
+    console.log("Fetching from:", apiUrl);
 
-              document.getElementById('g-id').textContent = id;
-              document.getElementById('g-ln').textContent = lastName;
-              document.getElementById('g-mid').textContent = midterm;
-              document.getElementById('g-fin').textContent = finalGrade;
+    fetch(apiUrl)
+      .then(response => {
+        if (!response.ok) throw new Error("Network response not ok");
+        return response.text();
+      })
+      .then(data => {
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(data, "text/xml");
+        const students = xmlDoc.getElementsByTagName("student");
+        let found = false;
 
-              document.getElementById('grade-status').hidden = true;
-              document.getElementById('grade-result').hidden = false;
-              break;
-            }
+        for (let student of students) {
+          const id = student.getElementsByTagName("student_id")[0]?.textContent;
+          if (id === studentId) {
+            found = true;
+
+            document.getElementById("g-id").textContent = id;
+            document.getElementById("g-ln").textContent =
+              student.getElementsByTagName("student_lastname")[0]?.textContent || "N/A";
+            document.getElementById("g-mid").textContent =
+              student.getElementsByTagName("midterm_grade")[0]?.textContent || "N/A";
+            document.getElementById("g-fin").textContent =
+              student.getElementsByTagName("final_grade")[0]?.textContent || "N/A";
+
+            document.getElementById("grade-status").hidden = true;
+            document.getElementById("grade-result").hidden = false;
+            console.log("✅ Grade loaded successfully!");
+            return;
           }
+        }
 
-          if (!found) {
-            document.getElementById('grade-status').textContent = 'Grade data not found.';
-            document.getElementById('grade-result').hidden = true;
-          }
-        })
-        .catch(error => {
-          console.error('Error loading grade data:', error);
-          document.getElementById('grade-status').textContent = 'Error loading grade data.';
-          document.getElementById('grade-result').hidden = true;
-        });
-    });
-  </script>
+        if (!found) {
+          document.getElementById("grade-status").textContent = "Grade data not found.";
+          document.getElementById("grade-result").hidden = true;
+        }
+      })
+      .catch(err => {
+        console.warn("Proxy failed:", proxies[currentProxy], err);
+        currentProxy++;
+        if (currentProxy < proxies.length) {
+          fetchGrade(); // Try next proxy
+        } else {
+          document.getElementById("grade-status").textContent = "Error loading grade data.";
+          document.getElementById("grade-result").hidden = true;
+        }
+      });
+  }
+
+  // Start fetching
+  fetchGrade();
+});
+</script>
+
 
 </body>
 </html>
+
