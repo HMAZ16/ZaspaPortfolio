@@ -7,53 +7,48 @@ document.addEventListener("DOMContentLoaded", () => {
   const gMid = document.getElementById("g-mid");
   const gFin = document.getElementById("g-fin");
 
-  const surname = "zaspa";
-  const idNumber = "2340020";
+  const lastName = "Zaspa";
+  const id = "2340020";
 
-  const apiUrl = `https://corsproxy.io/?http://class-grades-cs.mywebcommunity.org/grades_api.php?surname=${surname}&id_number=${idNumber}`;
+  const apiUrl =
+    "https://corsproxy.io/?http://class-grades-cs.mywebcommunity.org/grades_api.php?id=" +
+    id +
+    "&lastName=" +
+    lastName;
 
-  // Fetch the XML data
   fetch(apiUrl)
     .then((response) => {
       if (!response.ok) throw new Error("Network error: " + response.status);
       return response.text();
     })
     .then((data) => {
-      console.log("Response:", data); // for debugging
+      console.log("RAW XML:", data);
+
       const parser = new DOMParser();
       const xmlDoc = parser.parseFromString(data, "text/xml");
 
-      const students = Array.from(xmlDoc.getElementsByTagName("student"));
-      const student = students.find(
-        (s) =>
-          s.getElementsByTagName("student_id")[0]?.textContent?.trim() === idNumber
-      );
+      const student = xmlDoc.querySelector("student");
 
       if (!student) {
-        gradeStatus.textContent = "Student not found.";
+        gradeStatus.textContent = "Grade data not found.";
         return;
       }
 
-      const lastName =
-        student.getElementsByTagName("surname")[0]?.textContent?.trim() || "N/A";
-      const midterm =
-        student.getElementsByTagName("midterm_grade")[0]?.textContent?.trim() ||
-        "N/A";
-      const finalGrade =
-        student.getElementsByTagName("final_grade")[0]?.textContent?.trim() ||
-        "N/A";
+      const xmlId = student.querySelector("student_id")?.textContent?.trim();
+      const xmlLast = student.querySelector("student_lastname")?.textContent?.trim();
+      const xmlMid = student.querySelector("midterm_grade")?.textContent?.trim();
+      const xmlFin = student.querySelector("final_grade")?.textContent?.trim();
 
-      // Display results
-      gId.textContent = idNumber;
-      gLn.textContent = lastName;
-      gMid.textContent = midterm;
-      gFin.textContent = finalGrade;
+      gId.textContent = xmlId || "N/A";
+      gLn.textContent = xmlLast || "N/A";
+      gMid.textContent = xmlMid || "N/A";
+      gFin.textContent = xmlFin || "N/A";
 
       gradeStatus.hidden = true;
       gradeResult.hidden = false;
     })
     .catch((error) => {
-      console.error("Error fetching grades:", error);
-      gradeStatus.textContent = "Error fetching grade. Please try again later.";
+      console.error("Error:", error);
+      gradeStatus.textContent = "Error fetching grade.";
     });
 });
