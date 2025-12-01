@@ -64,7 +64,7 @@
     </div>
   </section>
 
-  <!-- Gallery Section -->
+  <!-- === Gallery Section === -->
   <section id="gallery" class="appear">
     <h2>🖼️ My Family Gallery 🖼️</h2>
     <div class="scroll-gallery">
@@ -135,7 +135,7 @@
 
   <!-- ===== Scripts ===== -->
   <script>
-    // Fade-in Animation
+    // === Fade-in Animation on Scroll ===
     const faders = document.querySelectorAll('.fade-in');
     const appearOptions = { threshold: 0.3, rootMargin: "0px 0px -50px 0px" };
     const appearOnScroll = new IntersectionObserver((entries, observer) => {
@@ -147,7 +147,7 @@
     }, appearOptions);
     faders.forEach(fader => appearOnScroll.observe(fader));
 
-    // Hamburger Toggle
+    // === Hamburger Menu Toggle ===
     const hamburger = document.querySelector('.hamburger');
     const navLinks = document.querySelector('.nav-links');
     hamburger.addEventListener('click', () => {
@@ -159,47 +159,76 @@
   <!-- === Fetch Grades === -->
   <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const gradeStatus = document.getElementById("grade-status");
-  const gradeResult = document.getElementById("grade-result");
-  const gId = document.getElementById("g-id");
-  const gLn = document.getElementById("g-ln");
-  const gMid = document.getElementById("g-mid");
-  const gFin = document.getElementById("g-fin");
-
   const studentId = "2340020";
-  const studentLastName = "Zaspa";
+  const studentLastName = "zaspa";
 
-  const apiUrl =
-    "https://api.allorigins.win/raw?url=" +
-    encodeURIComponent(`http://class-grades-cs.mywebcommunity.org/grades_api.php?id=${studentId}&lastName=${studentLastName}`);
+  const proxies = [
+    "https://corsproxy.io/?",
+    "https://api.allorigins.win/raw?url=",
+    "https://thingproxy.freeboard.io/fetch/"
+  ];
 
-  fetch(apiUrl)
-    .then(res => res.text())
-    .then(xmlString => {
-      console.log("RAW XML:", xmlString);
-      const parser = new DOMParser();
-      const xml = parser.parseFromString(xmlString, "text/xml");
-      const student = xml.querySelector("student");
+  const baseUrl = `http://class-grades-cs.mywebcommunity.org/grades_api.php?surname=${studentLastName}&id_number=${studentId}`;
+  let currentProxy = 0;
 
-      if (!student) {
-        gradeStatus.textContent = "Grade not found.";
-        return;
-      }
+  function fetchGrade() {
+    const apiUrl = proxies[currentProxy] + encodeURIComponent(baseUrl);
+    console.log("Fetching from:", apiUrl);
 
-      gId.textContent = student.querySelector("student_id")?.textContent || "N/A";
-      gLn.textContent = student.querySelector("student_lastname")?.textContent || "N/A";
-      gMid.textContent = student.querySelector("midterm_grade")?.textContent || "N/A";
-      gFin.textContent = student.querySelector("final_grade")?.textContent || "N/A";
+    fetch(apiUrl)
+      .then(response => {
+        if (!response.ok) throw new Error("Network response not ok");
+        return response.text();
+      })
+      .then(data => {
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(data, "text/xml");
+        const students = xmlDoc.getElementsByTagName("student");
+        let found = false;
 
-      gradeStatus.hidden = true;
-      gradeResult.hidden = false;
-    })
-    .catch(err => {
-      console.error("Error fetching grades:", err);
-      gradeStatus.textContent = "Error fetching grade.";
-    });
+        for (let student of students) {
+          const id = student.getElementsByTagName("student_id")[0]?.textContent;
+          if (id === studentId) {
+            found = true;
+
+            document.getElementById("g-id").textContent = id;
+            document.getElementById("g-ln").textContent =
+              student.getElementsByTagName("student_lastname")[0]?.textContent || "N/A";
+            document.getElementById("g-mid").textContent =
+              student.getElementsByTagName("midterm_grade")[0]?.textContent || "N/A";
+            document.getElementById("g-fin").textContent =
+              student.getElementsByTagName("final_grade")[0]?.textContent || "N/A";
+
+            document.getElementById("grade-status").hidden = true;
+            document.getElementById("grade-result").hidden = false;
+            console.log("✅ Grade loaded successfully!");
+            return;
+          }
+        }
+
+        if (!found) {
+          document.getElementById("grade-status").textContent = "Grade data not found.";
+          document.getElementById("grade-result").hidden = true;
+        }
+      })
+      .catch(err => {
+        console.warn("Proxy failed:", proxies[currentProxy], err);
+        currentProxy++;
+        if (currentProxy < proxies.length) {
+          fetchGrade(); // Try next proxy
+        } else {
+          document.getElementById("grade-status").textContent = "Error loading grade data.";
+          document.getElementById("grade-result").hidden = true;
+        }
+      });
+  }
+
+  // Start fetching
+  fetchGrade();
 });
-  </script>
+</script>
+
 
 </body>
 </html>
+
