@@ -137,6 +137,7 @@
 <script>
 document.addEventListener("DOMContentLoaded", () => {
 
+  // Your real info here
   const studentId = "2340020";
   const studentLastName = "Zaspa";
 
@@ -156,41 +157,34 @@ document.addEventListener("DOMContentLoaded", () => {
     fetch(apiUrl)
       .then(res => {
         if (!res.ok) throw new Error("Network Error");
-        return res.text();  // XML text
+        return res.json(); // API returns JSON
       })
-      .then(xmlString => {
-        console.log("RAW XML:", xmlString);
+      .then(data => {
+        console.log("API Response:", data);
 
-        const parser = new DOMParser();
-        const xml = parser.parseFromString(xmlString, "text/xml");
+        // If API returns success & data
+        if (data && data.student_id) {
 
-        const student = xml.querySelector("student");
-        if (!student) {
+          document.getElementById("g-id").textContent = data.student_id;
+          document.getElementById("g-ln").textContent = data.last_name;
+          document.getElementById("g-mid").textContent = data.midterm_grade;
+          document.getElementById("g-fin").textContent = data.final_grade;
+
+          // Show grade card
+          document.getElementById("grade-status").hidden = true;
+          document.getElementById("grade-result").hidden = false;
+        } 
+        else {
           document.getElementById("grade-status").textContent = "Grade not found.";
-          return;
         }
-
-        document.getElementById("g-id").textContent =
-          student.querySelector("student_id")?.textContent || "N/A";
-
-        document.getElementById("g-ln").textContent =
-          student.querySelector("student_lastname")?.textContent || "N/A";
-
-        document.getElementById("g-mid").textContent =
-          student.querySelector("midterm_grade")?.textContent || "N/A";
-
-        document.getElementById("g-fin").textContent =
-          student.querySelector("final_grade")?.textContent || "N/A";
-
-        document.getElementById("grade-status").hidden = true;
-        document.getElementById("grade-result").hidden = false;
       })
       .catch(err => {
         console.warn("Proxy failed:", proxies[currentProxy], err);
         currentProxy++;
-        if (currentProxy < proxies.length) fetchGrade();
-        else {
-          document.getElementById("grade-status").textContent = "Error loading grade.";
+        if (currentProxy < proxies.length) {
+          fetchGrade(); // Try the next proxy
+        } else {
+          document.getElementById("grade-status").textContent = "Error fetching grade.";
         }
       });
   }
@@ -198,6 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
   fetchGrade();
 });
 </script>
+
 
 
 
