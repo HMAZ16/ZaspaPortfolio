@@ -157,10 +157,11 @@
   </script>
 
   <!-- === Fetch Grades === -->
-  <script>
+<script>
 document.addEventListener("DOMContentLoaded", () => {
+
   const studentId = "2340020";
-  const studentLastName = "zaspa";
+  const studentLastName = "Zaspa";
 
   const proxies = [
     "https://corsproxy.io/?",
@@ -168,62 +169,55 @@ document.addEventListener("DOMContentLoaded", () => {
     "https://thingproxy.freeboard.io/fetch/"
   ];
 
-  const baseUrl = `http://class-grades-cs.mywebcommunity.org/grades_api.php?surname=${studentLastName}&id_number=${studentId}`;
+  const baseUrl = `http://class-grades-cs.mywebcommunity.org/grades_api.php?id=${studentId}&lastName=${studentLastName}`;
   let currentProxy = 0;
 
   function fetchGrade() {
     const apiUrl = proxies[currentProxy] + encodeURIComponent(baseUrl);
-    console.log("Fetching from:", apiUrl);
+    console.log("Fetching:", apiUrl);
 
     fetch(apiUrl)
-      .then(response => {
-        if (!response.ok) throw new Error("Network response not ok");
-        return response.text();
+      .then(res => {
+        if (!res.ok) throw new Error("Network Error");
+        return res.text();  // XML text
       })
-      .then(data => {
+      .then(xmlString => {
+        console.log("RAW XML:", xmlString);
+
         const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(data, "text/xml");
-        const students = xmlDoc.getElementsByTagName("student");
-        let found = false;
+        const xml = parser.parseFromString(xmlString, "text/xml");
 
-        for (let student of students) {
-          const id = student.getElementsByTagName("student_id")[0]?.textContent;
-          if (id === studentId) {
-            found = true;
-
-            document.getElementById("g-id").textContent = id;
-            document.getElementById("g-ln").textContent =
-              student.getElementsByTagName("student_lastname")[0]?.textContent || "N/A";
-            document.getElementById("g-mid").textContent =
-              student.getElementsByTagName("midterm_grade")[0]?.textContent || "N/A";
-            document.getElementById("g-fin").textContent =
-              student.getElementsByTagName("final_grade")[0]?.textContent || "N/A";
-
-            document.getElementById("grade-status").hidden = true;
-            document.getElementById("grade-result").hidden = false;
-            console.log("✅ Grade loaded successfully!");
-            return;
-          }
+        const student = xml.querySelector("student");
+        if (!student) {
+          document.getElementById("grade-status").textContent = "Grade not found.";
+          return;
         }
 
-        if (!found) {
-          document.getElementById("grade-status").textContent = "Grade data not found.";
-          document.getElementById("grade-result").hidden = true;
-        }
+        document.getElementById("g-id").textContent =
+          student.querySelector("student_id")?.textContent || "N/A";
+
+        document.getElementById("g-ln").textContent =
+          student.querySelector("student_lastname")?.textContent || "N/A";
+
+        document.getElementById("g-mid").textContent =
+          student.querySelector("midterm_grade")?.textContent || "N/A";
+
+        document.getElementById("g-fin").textContent =
+          student.querySelector("final_grade")?.textContent || "N/A";
+
+        document.getElementById("grade-status").hidden = true;
+        document.getElementById("grade-result").hidden = false;
       })
       .catch(err => {
         console.warn("Proxy failed:", proxies[currentProxy], err);
         currentProxy++;
-        if (currentProxy < proxies.length) {
-          fetchGrade(); // Try next proxy
-        } else {
-          document.getElementById("grade-status").textContent = "Error loading grade data.";
-          document.getElementById("grade-result").hidden = true;
+        if (currentProxy < proxies.length) fetchGrade();
+        else {
+          document.getElementById("grade-status").textContent = "Error loading grade.";
         }
       });
   }
 
-  // Start fetching
   fetchGrade();
 });
 </script>
@@ -231,4 +225,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
